@@ -30,9 +30,13 @@ public class CarController : MonoBehaviour
 
     public float maxAcceleration = 30.0f;
     public float brakeAcceleration = 50.0f;
+    public float frictionBrake = 5.0f; // New variable for idle engine/friction braking
+    public float maxSpeed = 30.0f; // Added a top speed cap
 
     public float turnSensitivity = 1.0f;
     public float maxSteerAngle = 30.0f;
+
+    public float downForce = 50.0f;
 
     public Vector3 _centerOfMass;
 
@@ -58,11 +62,12 @@ public class CarController : MonoBehaviour
         //WheelEffects();
     }
 
-    void LateUpdate()
+    void FixedUpdate()
     {
         Move();
         Steer();
         Brake();
+        ApplyDownForce();
     }
 
     public void MoveInput(float input)
@@ -79,16 +84,30 @@ public class CarController : MonoBehaviour
     {
         if (control == ControlMode.Keyboard)
         {
-            moveInput = Input.GetAxis("Vertical");
-            steerInput = Input.GetAxis("Horizontal");
+            moveInput = Input.GetAxisRaw("Vertical");
+            steerInput = Input.GetAxisRaw("Horizontal");
         }
     }
 
     void Move()
     {
+        float forwardSpeed = Vector3.Dot(transform.forward, carRb.linearVelocity);
+        
         foreach (var wheel in wheels)
         {
-            wheel.wheelCollider.motorTorque = moveInput * 600 * maxAcceleration * Time.deltaTime;
+            // Cut engine power if we're going too fast in the direction we want to accelerate
+            if (forwardSpeed > maxSpeed && moveInput > 0)
+            {
+                wheel.wheelCollider.motorTorque = 0;
+            }
+            else if (forwardSpeed < -maxSpeed && moveInput < 0)
+            {
+                wheel.wheelCollider.motorTorque = 0;
+            }
+            else
+            {
+                wheel.wheelCollider.motorTorque = moveInput * 600 * maxAcceleration;
+            }
         }
     }
 
@@ -106,21 +125,41 @@ public class CarController : MonoBehaviour
 
     void Brake()
     {
-        if (Input.GetKey(KeyCode.Space) || moveInput == 0)
+        if (Input.GetKey(KeyCode.Space))
         {
+            // Full braking force when pressing Space
             foreach (var wheel in wheels)
             {
-                wheel.wheelCollider.brakeTorque = 300 * brakeAcceleration * Time.deltaTime;
+                wheel.wheelCollider.brakeTorque = 600 * brakeAcceleration;
+                
+                // Stop the motor torque from fighting the brakes
+                wheel.wheelCollider.motorTorque = 0;
+            }
+        }
+        else if (moveInput == 0)
+        {
+            // Lighter friction brake when no input keys are pressed
+            foreach (var wheel in wheels)
+            {
+                wheel.wheelCollider.brakeTorque = 600 * frictionBrake;
+                
+                // Ensure motor torque is off while coasting
+                wheel.wheelCollider.motorTorque = 0;
             }
         }
         else
         {
+            // No braking when actively driving
             foreach (var wheel in wheels)
             {
                 wheel.wheelCollider.brakeTorque = 0;
             }
-
         }
+    }
+
+    void ApplyDownForce()
+    {
+        carRb.AddForce(-transform.up * downForce * carRb.linearVelocity.magnitude);
     }
 
     void AnimateWheels()
