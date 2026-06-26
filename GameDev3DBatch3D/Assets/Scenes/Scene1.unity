@@ -515,6 +515,7 @@ GameObject:
   - component: {fileID: 1077747583}
   - component: {fileID: 1077747582}
   - component: {fileID: 1077747584}
+  - component: {fileID: 1077747585}
   m_Layer: 0
   m_Name: Van
   m_TagString: Untagged
@@ -599,6 +600,23 @@ MonoBehaviour:
   - wheelModel: {fileID: 4518036723000016583}
     wheelCollider: {fileID: 722869529}
     axel: 0
+--- !u!114 &1077747585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077747581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbfe1f80d23f91f4794eb41b1eb8e9ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarUnstuck
+  maxTiltAngle: 70
+  checkInterval: 0.2
+  stuckTime: 3
+  liftAmount: 1.5
+  zeroVelocity: 1
 --- !u!1 &1291417463
 GameObject:
   m_ObjectHideFlags: 0
