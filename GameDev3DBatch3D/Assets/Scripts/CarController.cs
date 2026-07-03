@@ -84,8 +84,16 @@ public class CarController : MonoBehaviour
     {
         if (control == ControlMode.Keyboard)
         {
-            moveInput = Input.GetAxisRaw("Vertical");
-            steerInput = Input.GetAxisRaw("Horizontal");
+            float verticalInput = Input.GetAxisRaw("Vertical");
+            float horizontalInput = Input.GetAxisRaw("Horizontal");
+
+            steerInput = horizontalInput;
+            moveInput = verticalInput;
+
+            if (Mathf.Approximately(verticalInput, 0f) && !Mathf.Approximately(horizontalInput, 0f))
+            {
+                moveInput = Mathf.Abs(horizontalInput);
+            }
         }
     }
 
