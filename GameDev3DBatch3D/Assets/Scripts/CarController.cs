@@ -15,6 +15,7 @@ public class CarController : MonoBehaviour
     {
         public Transform wheelModel;
         public WheelCollider wheelCollider;
+        public GameObject wheelEffectObj;
         public Axel axel;
     }
 
@@ -72,10 +73,11 @@ public class CarController : MonoBehaviour
         handBrake = Input.GetKey(KeyCode.Space);
 
         AnimateWheels();
+        WheelEffects();
 
         foreach (var wheel in wheels)
 {
-    Debug.Log(wheel.wheelCollider.rpm);
+    // Debug.Log(wheel.wheelCollider.rpm);
 }
     }
 
@@ -235,6 +237,24 @@ public class CarController : MonoBehaviour
 
             wheel.wheelModel.position = pos;
             wheel.wheelModel.rotation = rot * Quaternion.Euler(0, -90, 0);
+        }
+    }
+
+    void WheelEffects()
+    {
+        foreach (var wheel in wheels)
+        {
+            //var dirtParticleMainSettings = wheel.smokeParticle.main;
+
+            if (Input.GetKey(KeyCode.Space) && wheel.axel == Axel.Rear && wheel.wheelCollider.isGrounded == true && rb.linearVelocity.magnitude >= 10.0f)
+            {
+                wheel.wheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = true;
+                // wheel.smokeParticle.Emit(1);
+            }
+            else
+            {
+                wheel.wheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = false;
+            }
         }
     }
 }
