@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 17714095}
   m_Layer: 0
   m_Name: Pole (4)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -166,7 +166,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &17714096
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -302,7 +304,7 @@ GameObject:
   - component: {fileID: 81546667}
   m_Layer: 0
   m_Name: Pole (12)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -334,7 +336,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &81546668
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -726,7 +730,7 @@ GameObject:
   - component: {fileID: 159521968}
   m_Layer: 0
   m_Name: Pole (6)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -758,7 +762,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &159521969
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1424,7 +1430,7 @@ GameObject:
   - component: {fileID: 464056911}
   m_Layer: 0
   m_Name: Pole (11)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1456,7 +1462,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &464056912
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1550,7 +1558,7 @@ GameObject:
   - component: {fileID: 503154857}
   m_Layer: 0
   m_Name: Pole (2)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1582,7 +1590,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &503154858
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1965,7 +1975,7 @@ GameObject:
   - component: {fileID: 640545526}
   m_Layer: 0
   m_Name: Pole (8)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1997,7 +2007,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &640545527
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2511,7 +2523,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -2958,7 +2970,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 811251235515696622, guid: 2abc429f57f2a8d40b6c110f2c926db2, type: 3}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!1 &1100692431
 GameObject:
   m_ObjectHideFlags: 0
@@ -2974,7 +2988,7 @@ GameObject:
   - component: {fileID: 1100692433}
   m_Layer: 0
   m_Name: Pole (1)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3006,7 +3020,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &1100692434
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3344,7 +3360,7 @@ GameObject:
   - component: {fileID: 1224583702}
   m_Layer: 0
   m_Name: Pole (5)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3376,7 +3392,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &1224583703
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3573,7 +3591,7 @@ GameObject:
   - component: {fileID: 1258986557}
   m_Layer: 0
   m_Name: Pole (3)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3605,7 +3623,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &1258986558
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3770,7 +3790,7 @@ GameObject:
   - component: {fileID: 1367566768}
   m_Layer: 0
   m_Name: Pole (7)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3802,7 +3822,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &1367566769
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3896,7 +3918,7 @@ GameObject:
   - component: {fileID: 1391759002}
   m_Layer: 0
   m_Name: Pole (14)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3928,7 +3950,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &1391759003
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4295,7 +4319,7 @@ GameObject:
   - component: {fileID: 1437761940}
   m_Layer: 0
   m_Name: Obstacles
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4631,7 +4655,7 @@ Camera:
   m_GameObject: {fileID: 1565717059}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 4
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 2
   m_GateFitMode: 2
@@ -5595,7 +5619,7 @@ GameObject:
   - component: {fileID: 1722456381}
   m_Layer: 0
   m_Name: Pole
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5612,7 +5636,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &1722456382
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5792,7 +5818,7 @@ GameObject:
   - component: {fileID: 1843281904}
   m_Layer: 0
   m_Name: Pole (10)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5824,7 +5850,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &1843281905
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6402,7 +6430,7 @@ GameObject:
   - component: {fileID: 2013012954}
   m_Layer: 0
   m_Name: Pole (13)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6434,7 +6462,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &2013012955
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6607,7 +6637,7 @@ GameObject:
   - component: {fileID: 2066359152}
   m_Layer: 0
   m_Name: Pole (9)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6639,7 +6669,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5290441fc052d94bb32458a2d149a13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  floatingTextPrefab: {fileID: 0}
   CollisionPenalty: 150
+  penaltyCooldown: 0.75
 --- !u!65 &2066359153
 BoxCollider:
   m_ObjectHideFlags: 0

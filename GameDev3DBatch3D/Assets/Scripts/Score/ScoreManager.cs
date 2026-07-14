@@ -14,6 +14,9 @@ public class ScoreManager : MonoBehaviour
 
     public TMP_Text scoreText;
 
+
+
+
     [Header("Star Thresholds")]
     [SerializeField] private float threeStarThreshold = 0.75f;
     [SerializeField] private float twoStarThreshold = 0.50f;
@@ -50,6 +53,7 @@ public class ScoreManager : MonoBehaviour
 
         if (CurrentScore < 0)
             CurrentScore = 0;
+
     }
 
     public void AddScore(int amount)
