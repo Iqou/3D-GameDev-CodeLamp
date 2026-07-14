@@ -4,12 +4,6 @@ using System.Collections.Generic;
 
 public class CarController : MonoBehaviour
 {
-    public enum ControlMode
-    {
-        Keyboard,
-        Buttons
-    };
-
     public enum Axel
     {
         Front,
@@ -17,178 +11,250 @@ public class CarController : MonoBehaviour
     }
 
     [Serializable]
-    public struct Wheel
+    public class Wheel
     {
-        public GameObject wheelModel;
+        public Transform wheelModel;
         public WheelCollider wheelCollider;
-        //public GameObject wheelEffectObj;
-        //public ParticleSystem smokeParticle;
+        public GameObject wheelEffectObj;
         public Axel axel;
     }
 
-    public ControlMode control;
-
-    public float maxAcceleration = 30.0f;
-    public float brakeAcceleration = 50.0f;
-    public float frictionBrake = 5.0f; // New variable for idle engine/friction braking
-    public float maxSpeed = 30.0f; // Added a top speed cap
-
-    public float turnSensitivity = 1.0f;
-    public float maxSteerAngle = 30.0f;
-
-    public float downForce = 50.0f;
-
-    public Vector3 _centerOfMass;
-
+    [Header("References")]
     public List<Wheel> wheels;
 
-    float moveInput;
-    float steerInput;
+    Rigidbody rb;
 
-    private Rigidbody carRb;
+    [Header("Engine")]
+    public float acceleration = 35f;
+    public float reverseAcceleration = 18f;
+    public float maxSpeed = 32f;
+    public float engineBrake = 8f;
 
+    [Header("Steering")]
+    public float maxSteerAngle = 35f;
+    public float minSteerAngle = 10f;
+    public float steerSpeed = 180f;
+
+    [Header("Brakes")]
+    public float brakeTorque = 5000f;
+    public float brakeStrength = 40f;
+
+    [Header("Grip")]
+    [Range(0.85f,1f)]
+    public float lateralGrip = 0.93f;
+
+    [Range(0.95f,1f)]
+    public float driftGrip = 0.985f;
+
+    public float normalSidewaysStiffness = 2.4f;
+    public float driftSidewaysStiffness = 0.8f;
+
+    [Header("Physics")]
+    public float downforce = 250f;
+    public Vector3 centerOfMass;
+
+    float throttle;
+    float steering;
+    bool handBrake;
 
     void Start()
     {
-        carRb = GetComponent<Rigidbody>();
-        carRb.centerOfMass = _centerOfMass;
+        rb = GetComponent<Rigidbody>();
+
+        rb.centerOfMass = centerOfMass;
+        rb.maxAngularVelocity = 4f;
 
     }
 
     void Update()
     {
-        GetInputs();
+        throttle = Input.GetAxisRaw("Vertical");
+        steering = Input.GetAxisRaw("Horizontal");
+        handBrake = Input.GetKey(KeyCode.Space);
+
         AnimateWheels();
-        //WheelEffects();
+        WheelEffects();
+
+        foreach (var wheel in wheels)
+{
+    // Debug.Log(wheel.wheelCollider.rpm);
+}
     }
 
     void FixedUpdate()
     {
-        Move();
+        Drive();
         Steer();
         Brake();
-        ApplyDownForce();
+        Stabilize();
+        ApplyDownforce();
+        HandleGrip();
     }
 
-    public void MoveInput(float input)
+    void Drive()
     {
-        moveInput = input;
-    }
+        Vector3 localVelocity = transform.InverseTransformDirection(rb.linearVelocity);
 
-    public void SteerInput(float input)
-    {
-        steerInput = input;
-    }
+        float forwardSpeed = localVelocity.z;
 
-    void GetInputs()
-    {
-        if (control == ControlMode.Keyboard)
+        if (throttle > 0)
         {
-            moveInput = Input.GetAxisRaw("Vertical");
-            steerInput = Input.GetAxisRaw("Horizontal");
+            if (forwardSpeed < maxSpeed)
+            {
+                rb.AddForce(transform.forward * acceleration, ForceMode.Acceleration);
+            }
         }
-    }
+        else if (throttle < 0)
+        {
+            if (forwardSpeed > -maxSpeed * 0.5f)
+            {
+                rb.AddForce(transform.forward * reverseAcceleration * throttle, ForceMode.Acceleration);
+            }
+        }
+        else
+{
 
-    void Move()
-    {
-        float forwardSpeed = Vector3.Dot(transform.forward, carRb.linearVelocity);
-        
+    localVelocity.z = Mathf.Lerp(
+        localVelocity.z,
+        0f,
+        engineBrake * Time.fixedDeltaTime);
+
+    rb.linearVelocity = transform.TransformDirection(localVelocity);
+}
+
+        // Clamp forward speed only
+        localVelocity = transform.InverseTransformDirection(rb.linearVelocity);
+        localVelocity.z = Mathf.Clamp(localVelocity.z, -maxSpeed * 0.5f, maxSpeed);
+
+        rb.linearVelocity = transform.TransformDirection(localVelocity);
+
         foreach (var wheel in wheels)
-        {
-            // Cut engine power if we're going too fast in the direction we want to accelerate
-            if (forwardSpeed > maxSpeed && moveInput > 0)
-            {
-                wheel.wheelCollider.motorTorque = 0;
-            }
-            else if (forwardSpeed < -maxSpeed && moveInput < 0)
-            {
-                wheel.wheelCollider.motorTorque = 0;
-            }
-            else
-            {
-                wheel.wheelCollider.motorTorque = moveInput * 600 * maxAcceleration;
-            }
-        }
+{
+    if (wheel.axel == Axel.Rear)
+    {
+        wheel.wheelCollider.motorTorque = throttle * 5f;
+    }
+}
     }
 
     void Steer()
     {
+        float speedPercent = rb.linearVelocity.magnitude / maxSpeed;
+
+        float steerAngle = Mathf.Lerp(
+            maxSteerAngle,
+            minSteerAngle,
+            speedPercent);
+
         foreach (var wheel in wheels)
         {
-            if (wheel.axel == Axel.Front)
-            {
-                var _steerAngle = steerInput * turnSensitivity * maxSteerAngle;
-                wheel.wheelCollider.steerAngle = Mathf.Lerp(wheel.wheelCollider.steerAngle, _steerAngle, 0.6f);
-            }
+            if (wheel.axel != Axel.Front)
+                continue;
+
+            float target = steering * steerAngle;
+
+            wheel.wheelCollider.steerAngle =
+                Mathf.MoveTowards(
+                    wheel.wheelCollider.steerAngle,
+                    target,
+                    steerSpeed * Time.fixedDeltaTime);
         }
     }
 
     void Brake()
+{
+
+    // Apply brake torque to rear wheels if handbrake is pressed, otherwise set brake torque to 0
+    foreach (var wheel in wheels)
     {
-        if (Input.GetKey(KeyCode.Space))
-        {
-            // Full braking force when pressing Space
-            foreach (var wheel in wheels)
-            {
-                wheel.wheelCollider.brakeTorque = 600 * brakeAcceleration;
-                
-                // Stop the motor torque from fighting the brakes
-                wheel.wheelCollider.motorTorque = 0;
-            }
-        }
-        else if (moveInput == 0)
-        {
-            // Lighter friction brake when no input keys are pressed
-            foreach (var wheel in wheels)
-            {
-                wheel.wheelCollider.brakeTorque = 600 * frictionBrake;
-                
-                // Ensure motor torque is off while coasting
-                wheel.wheelCollider.motorTorque = 0;
-            }
-        }
+        if (wheel.axel == Axel.Rear)
+            wheel.wheelCollider.brakeTorque = handBrake ? brakeTorque : 0;
         else
+            wheel.wheelCollider.brakeTorque = 0;
+    }
+
+
+    // Apply handbrake effect on the car's velocity (This would cause problem with the space bar drift as it would slow down the car too much)
+    if (handBrake)
+    {
+        Vector3 localVelocity = transform.InverseTransformDirection(rb.linearVelocity);
+
+        localVelocity.z = Mathf.MoveTowards(
+            localVelocity.z,
+            0f,
+            brakeStrength * Time.fixedDeltaTime);
+
+        rb.linearVelocity = transform.TransformDirection(localVelocity);
+    }
+}
+    
+    // Stabilize the car's lateral movement by reducing sideways velocity (Creates Drifting)
+    void Stabilize()
+    {
+        Vector3 localVelocity = transform.InverseTransformDirection(rb.linearVelocity);
+
+        if (handBrake)
+            localVelocity.x *= driftGrip;
+        else
+            localVelocity.x *= lateralGrip;
+
+        rb.linearVelocity = transform.TransformDirection(localVelocity);
+    }
+
+    // Apply downforce to the car based on its speed so it doesn't turnover easily at high speeds and to increase grip
+    void ApplyDownforce()
+    {
+        rb.AddForce(
+            -transform.up *
+            downforce *
+            rb.linearVelocity.magnitude,
+            ForceMode.Force);
+    }
+
+    // Adjust the sideways friction of the wheels based on whether the handbrake is pressed or not
+    void HandleGrip()
+    {
+        float stiffness = handBrake
+            ? driftSidewaysStiffness
+            : normalSidewaysStiffness;
+
+        foreach (var wheel in wheels)
         {
-            // No braking when actively driving
-            foreach (var wheel in wheels)
-            {
-                wheel.wheelCollider.brakeTorque = 0;
-            }
+            WheelFrictionCurve side = wheel.wheelCollider.sidewaysFriction;
+            side.stiffness = stiffness;
+            wheel.wheelCollider.sidewaysFriction = side;
         }
     }
 
-    void ApplyDownForce()
-    {
-        carRb.AddForce(-transform.up * downForce * carRb.linearVelocity.magnitude);
-    }
-
+    // Animate the wheel models to match the position and rotation of the wheel colliders
     void AnimateWheels()
     {
         foreach (var wheel in wheels)
         {
-            Quaternion rot;
-            Vector3 pos;
-            wheel.wheelCollider.GetWorldPose(out pos, out rot);
-            wheel.wheelModel.transform.position = pos;
-            wheel.wheelModel.transform.rotation = rot * Quaternion.Euler(0, -90, 0);
+            wheel.wheelCollider.GetWorldPose(
+                out Vector3 pos,
+                out Quaternion rot);
+
+            wheel.wheelModel.position = pos;
+            wheel.wheelModel.rotation = rot * Quaternion.Euler(0, -90, 0);
         }
     }
 
-    //void WheelEffects()
-    //{
-    //    foreach (var wheel in wheels)
-    //    {
-    //        //var dirtParticleMainSettings = wheel.smokeParticle.main;
+    void WheelEffects()
+    {
+        foreach (var wheel in wheels)
+        {
+            //var dirtParticleMainSettings = wheel.smokeParticle.main;
 
-    //        if (Input.GetKey(KeyCode.Space) && wheel.axel == Axel.Rear && wheel.wheelCollider.isGrounded == true && carRb.linearVelocity.magnitude >= 10.0f)
-    //        {
-    //            wheel.wheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = true;
-    //            wheel.smokeParticle.Emit(1);
-    //        }
-    //        else
-    //        {
-    //            wheel.wheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = false;
-    //        }
-    //    }
-    //}
+            if (Input.GetKey(KeyCode.Space) && wheel.axel == Axel.Rear && wheel.wheelCollider.isGrounded == true && rb.linearVelocity.magnitude >= 10.0f)
+            {
+                wheel.wheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = true;
+                // wheel.smokeParticle.Emit(1);
+            }
+            else
+            {
+                wheel.wheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = false;
+            }
+        }
+    }
 }

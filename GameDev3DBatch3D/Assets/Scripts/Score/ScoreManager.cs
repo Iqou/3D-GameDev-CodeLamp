@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -10,6 +11,11 @@ public class ScoreManager : MonoBehaviour
     public int TimePenalty = 30;
 
     private float timer;
+
+    public TMP_Text scoreText;
+
+
+
 
     [Header("Star Thresholds")]
     [SerializeField] private float threeStarThreshold = 0.75f;
@@ -36,8 +42,9 @@ public class ScoreManager : MonoBehaviour
         {
             timer -= 1f;
 
-            RemoveScore(TimePenalty);
+            RemoveScore(TimePenalty);   
         }
+        scoreText.text = "Score: " + CurrentScore.ToString();
     }
 
     public void RemoveScore(int amount)
@@ -46,6 +53,7 @@ public class ScoreManager : MonoBehaviour
 
         if (CurrentScore < 0)
             CurrentScore = 0;
+
     }
 
     public void AddScore(int amount)
@@ -68,4 +76,6 @@ public class ScoreManager : MonoBehaviour
 
     return 1;
 }
+
+
 }
