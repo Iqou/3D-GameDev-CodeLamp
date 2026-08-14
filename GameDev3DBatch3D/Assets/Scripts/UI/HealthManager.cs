@@ -12,7 +12,18 @@ public class HealthManager : MonoBehaviour
     [Header("Game Over UI")]
     public GameObject gameOverPanel; // Drag GameObject Panel Game Over di Inspector
 
+    [Header("Damage dari Obstacle")]
+    public string obstacleTag = "Obstacle"; // Tag object yang bikin luka
+    public float damagePerHit = 1f;         // Berkurang 1 darah per tabrakan
+    public float invincibleTime = 0.3f;     // Jeda kebal antar hit (jaga-jaga collider ganda)
+
+    [Header("Hancurkan Obstacle")]
+    public bool destroyObstacle = true;     // Obstacle hilang setelah disentuh
+    public float destroyDelay = 0f;         // 0 = langsung hilang
+    public GameObject destroyEffect;        // Opsional: prefab partikel/ledakan
+
     private bool isGameOver = false;
+    private float lastHitTime = -999f;
 
     void Start()
     {
@@ -24,6 +35,8 @@ public class HealthManager : MonoBehaviour
 
         // Memastikan waktu berjalan normal saat game mulai
         Time.timeScale = 1f;
+
+        UpdateHealthBar();
     }
 
     void Update()
@@ -42,9 +55,93 @@ public class HealthManager : MonoBehaviour
         {
             TakeDamage(1);
         }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Heal(1);
+        }
+    }
+
+    // ===== DETEKSI TABRAKAN 2D =====
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        HandleObstacleTouch(collision.gameObject);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        HandleObstacleTouch(other.gameObject);
+    }
+
+    // ===== DETEKSI TABRAKAN 3D (kalau project-mu 3D) =====
+    void OnCollisionEnter(Collision collision)
+    {
+        HandleObstacleTouch(collision.gameObject);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        HandleObstacleTouch(other.gameObject);
+    }
+
+    // Inti logika: cek tag -> kurangi darah -> hancurkan obstacle
+    private void HandleObstacleTouch(GameObject hitObject)
+    {
+        if (isGameOver || hitObject == null) return;
+
+        GameObject obstacle = GetObstacleRoot(hitObject);
+        if (obstacle == null) return;
+
+        // Masih dalam masa kebal? abaikan
+        if (Time.time - lastHitTime < invincibleTime) return;
+        lastHitTime = Time.time;
+
+        TakeDamage(damagePerHit);
+
+        if (destroyObstacle)
+        {
+            DestroyObstacle(obstacle);
+        }
+    }
+
+    // Cari object ber-tag Obstacle (termasuk kalau collider-nya ada di child)
+    private GameObject GetObstacleRoot(GameObject hitObject)
+    {
+        if (hitObject.CompareTag(obstacleTag)) return hitObject;
+
+        Transform parent = hitObject.transform.parent;
+        while (parent != null)
+        {
+            if (parent.CompareTag(obstacleTag)) return parent.gameObject;
+            parent = parent.parent;
+        }
+
+        return null;
+    }
+
+    private void DestroyObstacle(GameObject obstacle)
+    {
+        // Munculkan efek hancur (opsional)
+        if (destroyEffect != null)
+        {
+            GameObject fx = Instantiate(destroyEffect, obstacle.transform.position, Quaternion.identity);
+            Destroy(fx, 2f);
+        }
+
+        // Matikan collider dulu supaya tidak memicu damage kedua
+        Collider2D[] colliders2D = obstacle.GetComponentsInChildren<Collider2D>();
+        foreach (Collider2D col in colliders2D) col.enabled = false;
+
+        Collider[] colliders3D = obstacle.GetComponentsInChildren<Collider>();
+        foreach (Collider col in colliders3D) col.enabled = false;
+
+        if (destroyDelay <= 0f)
+        {
+            Destroy(obstacle); // Langsung hilang
+        }
+        else
+        {
+            Destroy(obstacle, destroyDelay); // Hilang setelah beberapa detik
         }
     }
 
@@ -53,19 +150,26 @@ public class HealthManager : MonoBehaviour
         healthAmount -= damage;
         healthAmount = Mathf.Clamp(healthAmount, 0, maxHealth);
 
-        if (healthBar != null)
-        {
-            healthBar.fillAmount = healthAmount / maxHealth;
-        }
+        UpdateHealthBar();
 
-        Debug.Log("-1 health");
+        Debug.Log("-" + damage + " health | sisa: " + healthAmount);
+
+        if (healthAmount <= 0)
+        {
+            GameOver();
+        }
     }
 
-    public void Heal(float damage)
+    public void Heal(float amount)
     {
-        healthAmount += damage; // Diperbaiki dari healthAmount += healthAmount
+        healthAmount += amount;
         healthAmount = Mathf.Clamp(healthAmount, 0, maxHealth);
 
+        UpdateHealthBar();
+    }
+
+    private void UpdateHealthBar()
+    {
         if (healthBar != null)
         {
             healthBar.fillAmount = healthAmount / maxHealth;
@@ -74,6 +178,8 @@ public class HealthManager : MonoBehaviour
 
     void GameOver()
     {
+        if (isGameOver) return;
+
         isGameOver = true;
 
         // Munculkan panel Game Over
@@ -87,18 +193,15 @@ public class HealthManager : MonoBehaviour
     }
 
     // --- FUNGSI UNTUK TOMBOL UI ---
-
-    // Pasang fungsi ini pada OnClick() tombol Retry
     public void RetryGame()
     {
-        Time.timeScale = 1f; // Kembalikan kecepatan waktu ke normal
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Reload scene saat ini
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // Pasang fungsi ini pada OnClick() tombol Quit
     public void QuitGame()
     {
         Debug.Log("Keluar dari Game...");
-        Application.Quit(); // Keluar dari game (hanya berfungsi di build exe/apk, bukan di editor)
+        Application.Quit();
     }
 }
