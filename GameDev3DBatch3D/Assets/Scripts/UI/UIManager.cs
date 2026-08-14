@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -10,9 +11,25 @@ public class UIManager : MonoBehaviour
     public GameObject gameOverPanel;
     public GameObject gameWinPanel;
 
-    [Header("Objective Table Panel")]
-    public GameObject objectiveContent;
+    [Header("Objective Tablet Panel")]
+    public RectTransform objectiveContentRect;  // Panel isi objective (yang keluar layar)
+    public RectTransform objectiveButtonRect;   // Tombol toggle (tetap terlihat di layar)
     public TMP_Text objectiveButtonText;
+    public CanvasGroup objectiveCanvasGroup;    // Opsional: untuk fade + blok klik saat tertutup
+
+    [Header("Slide Settings")]
+    public float contentSlideDistance = 600f;   // Seberapa jauh CONTENT turun (bikin keluar layar)
+    public float buttonSlideDistance = 120f;    // Seberapa jauh TOMBOL turun (jangan sampai keluar layar)
+    public bool autoUseContentHeight = false;   // Kalau true, jarak content dihitung dari tinggi panel
+    public float autoExtraPadding = 50f;        // Tambahan jarak saat autoUseContentHeight aktif
+    public float slideDuration = 0.35f;         // Durasi animasi (detik)
+    public AnimationCurve slideCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+    public bool startOpened = true;             // Kondisi awal saat game mulai
+    public bool fadeContentWhenHidden = false;  // Opsional: ikut memudar saat tertutup
+
+    private Vector2 contentShownPos;
+    private Vector2 buttonShownPos;
+    private Coroutine slideRoutine;
     private bool isObjectiveOpen = true;
 
     [Header("UI Health")]
@@ -40,7 +57,11 @@ public class UIManager : MonoBehaviour
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (gameWinPanel != null) gameWinPanel.SetActive(false);
 
-        // Set teks awal pada tombol toggle objective
+        // Simpan posisi awal (posisi saat panel terbuka) lalu set kondisi awal
+        CacheObjectivePositions();
+        isObjectiveOpen = startOpened;
+        ApplyObjectiveState(isObjectiveOpen, true); // true = instan, tanpa animasi
+
         UpdateObjectiveButtonText();
     }
 
@@ -73,7 +94,6 @@ public class UIManager : MonoBehaviour
         }
 
         // --- INPUT DETEKSI ---
-        // Tekan 'Q' untuk Menang / Kamu Berhasil
         if (Input.GetKeyDown(KeyCode.Q))
         {
             GameWin();
@@ -98,24 +118,134 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // --- MANAJEMEN OBJECTIVE TABEL (TOGGLE MINIMIZE) ---
+    // =====================================================
+    //  OBJECTIVE TABLET SLIDE (turun keluar layar / kembali)
+    // =====================================================
+
+    void CacheObjectivePositions()
+    {
+        if (objectiveContentRect != null)
+        {
+            contentShownPos = objectiveContentRect.anchoredPosition;
+
+            // Hitung otomatis jarak turun berdasarkan tinggi panel
+            if (autoUseContentHeight)
+            {
+                contentSlideDistance = objectiveContentRect.rect.height + autoExtraPadding;
+            }
+        }
+
+        if (objectiveButtonRect != null)
+        {
+            buttonShownPos = objectiveButtonRect.anchoredPosition;
+        }
+    }
+
+    // Dipasang di OnClick() tombol Tugas
     public void ToggleObjectivePanel()
     {
         isObjectiveOpen = !isObjectiveOpen;
+        ApplyObjectiveState(isObjectiveOpen, false);
+        UpdateObjectiveButtonText();
+    }
 
-        if (objectiveContent != null)
+    // Bonus: kalau butuh buka/tutup dari script lain
+    public void SetObjectivePanel(bool open)
+    {
+        if (isObjectiveOpen == open) return;
+        isObjectiveOpen = open;
+        ApplyObjectiveState(isObjectiveOpen, false);
+        UpdateObjectiveButtonText();
+    }
+
+    void ApplyObjectiveState(bool open, bool instant)
+    {
+        // Saat tertutup, langsung matikan klik supaya tombol di dalam panel tidak bisa ditekan
+        if (objectiveCanvasGroup != null)
         {
-            objectiveContent.SetActive(isObjectiveOpen);
+            objectiveCanvasGroup.interactable = open;
+            objectiveCanvasGroup.blocksRaycasts = open;
         }
 
-        UpdateObjectiveButtonText();
+        if (slideRoutine != null)
+        {
+            StopCoroutine(slideRoutine);
+            slideRoutine = null;
+        }
+
+        if (instant || slideDuration <= 0f)
+        {
+            if (objectiveContentRect != null)
+                objectiveContentRect.anchoredPosition = GetContentTarget(open);
+
+            if (objectiveButtonRect != null)
+                objectiveButtonRect.anchoredPosition = GetButtonTarget(open);
+
+            if (fadeContentWhenHidden && objectiveCanvasGroup != null)
+                objectiveCanvasGroup.alpha = open ? 1f : 0f;
+
+            return;
+        }
+
+        slideRoutine = StartCoroutine(SlideObjectiveRoutine(open));
+    }
+
+    Vector2 GetContentTarget(bool open)
+    {
+        return open ? contentShownPos : contentShownPos + Vector2.down * contentSlideDistance;
+    }
+
+    Vector2 GetButtonTarget(bool open)
+    {
+        return open ? buttonShownPos : buttonShownPos + Vector2.down * buttonSlideDistance;
+    }
+
+    IEnumerator SlideObjectiveRoutine(bool open)
+    {
+        Vector2 contentStart = objectiveContentRect != null ? objectiveContentRect.anchoredPosition : Vector2.zero;
+        Vector2 buttonStart = objectiveButtonRect != null ? objectiveButtonRect.anchoredPosition : Vector2.zero;
+
+        Vector2 contentTarget = GetContentTarget(open);
+        Vector2 buttonTarget = GetButtonTarget(open);
+
+        float startAlpha = objectiveCanvasGroup != null ? objectiveCanvasGroup.alpha : 1f;
+        float targetAlpha = open ? 1f : 0f;
+
+        float elapsed = 0f;
+
+        while (elapsed < slideDuration)
+        {
+            // unscaledDeltaTime -> animasi tetap jalan walau Time.timeScale = 0 (saat pause)
+            elapsed += Time.unscaledDeltaTime;
+
+            float t = Mathf.Clamp01(elapsed / slideDuration);
+            float eased = slideCurve.Evaluate(t);
+
+            if (objectiveContentRect != null)
+                objectiveContentRect.anchoredPosition = Vector2.LerpUnclamped(contentStart, contentTarget, eased);
+
+            if (objectiveButtonRect != null)
+                objectiveButtonRect.anchoredPosition = Vector2.LerpUnclamped(buttonStart, buttonTarget, eased);
+
+            if (fadeContentWhenHidden && objectiveCanvasGroup != null)
+                objectiveCanvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+
+            yield return null;
+        }
+
+        // Snap ke posisi akhir supaya presisi
+        if (objectiveContentRect != null) objectiveContentRect.anchoredPosition = contentTarget;
+        if (objectiveButtonRect != null) objectiveButtonRect.anchoredPosition = buttonTarget;
+        if (fadeContentWhenHidden && objectiveCanvasGroup != null) objectiveCanvasGroup.alpha = targetAlpha;
+
+        slideRoutine = null;
     }
 
     void UpdateObjectiveButtonText()
     {
         if (objectiveButtonText != null)
         {
-            objectiveButtonText.text = isObjectiveOpen ? "Tugas" : "Tugas";
+            objectiveButtonText.text = isObjectiveOpen ? "Tugas \u25BC" : "Tugas \u25B2";
         }
     }
 
@@ -182,7 +312,7 @@ public class UIManager : MonoBehaviour
     // --- FUNGSI EXIT KEMBALI KE MAIN MENU ---
     public void OnGameExitPress()
     {
-        Time.timeScale = 1f; // Resets kecepatan waktu agar game di Main Menu tidak macet
+        Time.timeScale = 1f; // Reset kecepatan waktu agar game di Main Menu tidak macet
         SceneManager.LoadScene("Main Menu"); // Kembali ke scene MainMenu
     }
 }
