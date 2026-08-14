@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     [Header("UI Panels")]
     public GameObject pauseUI;
     public GameObject gameOverPanel;
+    public GameObject gameWinPanel; // <-- 1. TAMBAHKAN PANEL "KAMU BERHASIL" DI SINI
 
     [Header("Objective Table Panel")]
     public GameObject objectiveContent;
@@ -34,9 +35,10 @@ public class UIManager : MonoBehaviour
         // Mulai timer
         timerIsRunning = true;
 
-        // Sembunyikan panel UI di awal
+        // Sembunyikan semua panel UI di awal
         if (pauseUI != null) pauseUI.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (gameWinPanel != null) gameWinPanel.SetActive(false); // Sembunyikan Win Panel
 
         // Set teks awal pada tombol toggle objective
         UpdateObjectiveButtonText();
@@ -44,7 +46,7 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        // Jika sudah Game Over, hentikan semua kalkulasi update
+        // Jika permainan sudah selesai (Game Over atau Menang), hentikan semua kalkulasi
         if (isGameOver) return;
 
         // --- SISTEM TIMER ---
@@ -52,17 +54,15 @@ public class UIManager : MonoBehaviour
         {
             if (timeRemaining > 0)
             {
-                // Kurangi waktu tiap detik
                 timeRemaining -= Time.deltaTime;
                 DisplayTime(timeRemaining);
             }
             else
             {
-                // Jika waktu habis
                 timeRemaining = 0;
                 timerIsRunning = false;
                 DisplayTime(0);
-                GameOver(); // Trigger Game Over saat waktu habis
+                GameOver(); // Game Over jika waktu habis
             }
         }
 
@@ -72,7 +72,14 @@ public class UIManager : MonoBehaviour
             GameOver();
         }
 
-        // --- INPUT TESTING (Tekan Backspace untuk Damage, Space untuk Heal) ---
+        // --- INPUT DETEKSI ---
+        // Tekan 'Q' untuk Menang / Kamu Berhasil
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            GameWin();
+        }
+
+        // Testing Input (Damage & Heal)
         if (Input.GetKeyDown(KeyCode.Backspace)) TakeDamage(1);
         if (Input.GetKeyDown(KeyCode.Space)) Heal(1);
     }
@@ -135,14 +142,24 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // --- PAUSE & GAME OVER ---
+    // --- PAUSE, GAME OVER, & GAME WIN ---
     void GameOver()
     {
         isGameOver = true;
         timerIsRunning = false;
 
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
-        Time.timeScale = 0f; // Hentikan game
+        Time.timeScale = 0f; // Hentikan pergerakan/waktu game
+    }
+
+    // <-- 2. FUNGSI BARU UNTUK KEMENANGAN -->
+    public void GameWin()
+    {
+        isGameOver = true;
+        timerIsRunning = false;
+
+        if (gameWinPanel != null) gameWinPanel.SetActive(true);
+        Time.timeScale = 0f; // Hentikan game saat menang
     }
 
     public void OnEnterPausePress()
@@ -165,6 +182,7 @@ public class UIManager : MonoBehaviour
 
     public void OnGameExitPress()
     {
-        Application.Quit();
+        Time.timeScale = 1f; // WAJIB: Kembalikan waktu ke normal sebelum berpindah scene
+        SceneManager.LoadScene("MainMenu"); // Ganti "MainMenu" sesuai NAMA EXACT scene main menu kamu
     }
 }
