@@ -8,7 +8,7 @@ public class UIManager : MonoBehaviour
     [Header("UI Panels")]
     public GameObject pauseUI;
     public GameObject gameOverPanel;
-    public GameObject gameWinPanel; // <-- 1. TAMBAHKAN PANEL "KAMU BERHASIL" DI SINI
+    public GameObject gameWinPanel;
 
     [Header("Objective Table Panel")]
     public GameObject objectiveContent;
@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
         // Sembunyikan semua panel UI di awal
         if (pauseUI != null) pauseUI.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
-        if (gameWinPanel != null) gameWinPanel.SetActive(false); // Sembunyikan Win Panel
+        if (gameWinPanel != null) gameWinPanel.SetActive(false);
 
         // Set teks awal pada tombol toggle objective
         UpdateObjectiveButtonText();
@@ -152,7 +152,6 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 0f; // Hentikan pergerakan/waktu game
     }
 
-    // <-- 2. FUNGSI BARU UNTUK KEMENANGAN -->
     public void GameWin()
     {
         isGameOver = true;
@@ -180,9 +179,10 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    // --- FUNGSI EXIT KEMBALI KE MAIN MENU ---
     public void OnGameExitPress()
     {
-        Time.timeScale = 1f; // WAJIB: Kembalikan waktu ke normal sebelum berpindah scene
-        SceneManager.LoadScene("MainMenu"); // Ganti "MainMenu" sesuai NAMA EXACT scene main menu kamu
+        Time.timeScale = 1f; // Resets kecepatan waktu agar game di Main Menu tidak macet
+        SceneManager.LoadScene("Main Menu"); // Kembali ke scene MainMenu
     }
 }
