@@ -90,5 +90,10 @@ public class School : MonoBehaviour, IObjective
             OnCompleted?.Invoke(this);
         }
     }
+
+    public int FoodDelivered
+    {
+        get { return foodDelivered; }
+    }
 }
 
