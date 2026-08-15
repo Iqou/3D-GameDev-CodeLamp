@@ -331,6 +331,15 @@ MonoBehaviour:
   - groupID: Button
     clips:
     - {fileID: 8300000, guid: e3f765f45fe43a844a65ab80b975bffb, type: 3}
+  - groupID: Retry
+    clips:
+    - {fileID: 8300000, guid: 5b7f7bfb00c998c42ac807f4fbe8493d, type: 3}
+  - groupID: Lose
+    clips:
+    - {fileID: 8300000, guid: 6b1c564cc5837894299f8fd7a80b8aaf, type: 3}
+  - groupID: Hurt
+    clips:
+    - {fileID: 8300000, guid: d9aa52b0df18b8948a2e17ea57066a69, type: 3}
 --- !u!1 &2209700
 GameObject:
   m_ObjectHideFlags: 0
@@ -874,6 +883,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuManager
   creditsPanel: {fileID: 3525510}
+  buttonSoundName: Button
+  buttonSoundDelay: 0.15
 --- !u!1 &453509646
 GameObject:
   m_ObjectHideFlags: 0

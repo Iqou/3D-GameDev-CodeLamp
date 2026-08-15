@@ -56,10 +56,7 @@ public class HealthManager : MonoBehaviour
             TakeDamage(10);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Heal(1);
-        }
+
     }
 
     // ===== DETEKSI TABRAKAN 2D =====
@@ -151,6 +148,7 @@ public class HealthManager : MonoBehaviour
         healthAmount = Mathf.Clamp(healthAmount, 0, maxHealth);
 
         UpdateHealthBar();
+        SoundManager.Instance.PlaySound2D("Hurt");
 
         Debug.Log("-" + damage + " health | sisa: " + healthAmount);
 
@@ -178,6 +176,7 @@ public class HealthManager : MonoBehaviour
 
     void GameOver()
     {
+        SoundManager.Instance.PlaySound2D("Lose");
         if (isGameOver) return;
 
         isGameOver = true;
@@ -195,6 +194,7 @@ public class HealthManager : MonoBehaviour
     // --- FUNGSI UNTUK TOMBOL UI ---
     public void RetryGame()
     {
+        SoundManager.Instance.PlaySound2D("Retry");
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
