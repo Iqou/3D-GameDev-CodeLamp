@@ -78,6 +78,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 20f359c339592a34fa0b0866b6d8031c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7616464005996149006}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 20f359c339592a34fa0b0866b6d8031c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8741551702725936022}
   m_SourcePrefab: {fileID: 100100000, guid: 20f359c339592a34fa0b0866b6d8031c, type: 3}
 --- !u!1 &1890223640185023108 stripped
 GameObject:
@@ -118,3 +121,25 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 37.21733, y: 29.790794, z: 28.45993}
   m_Center: {x: 0.52165985, y: 14.7950115, z: 0.75302124}
+--- !u!114 &8741551702725936022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1890223640185023108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 425103faeda1842458c491f03bfdab89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSpinner
+  settings:
+    spinEnabled: 1
+    spinSpeed: 90
+    spinAxis: {x: 0, y: 1, z: 0}
+    spinInWorldSpace: 1
+    randomizeStartRotation: 0
+    bobEnabled: 1
+    bobAmplitude: 0.15
+    bobSpeed: 2
+    randomizeBobPhase: 1

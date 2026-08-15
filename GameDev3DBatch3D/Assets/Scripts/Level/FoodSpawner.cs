@@ -9,6 +9,11 @@ public class FoodSpawner : MonoBehaviour
     [SerializeField] private float RespawnDelay = 5f;
     [SerializeField] private bool respawnEnabled = true;
 
+    [Header("Food Spin")]
+    [SerializeField] private bool applySpinOnSpawn = true;          // Otomatis pasang ItemSpinner ke crate
+    [SerializeField] private bool overridePrefabSpinner = true;     // Timpa setting spinner yang sudah ada di prefab
+    [SerializeField] private SpinSettings spinSettings = new SpinSettings();
+
     private FoodCrate[] crates;
 
     private void Start()
@@ -20,7 +25,8 @@ public class FoodSpawner : MonoBehaviour
         }
 
         crates = new FoodCrate[spawnPoints.Length];
-        for(int i = 0; i < spawnPoints.Length; i++)
+
+        for (int i = 0; i < spawnPoints.Length; i++)
         {
             SpawnAt(i);
         }
@@ -30,9 +36,29 @@ public class FoodSpawner : MonoBehaviour
     {
         Transform point = spawnPoints[index];
         FoodCrate crate = Instantiate(createPrefab, point.position, point.rotation);
-
         crates[index] = crate;
         crate.OnCollected += HandleCrateCollected;
+
+        SetupSpin(crate);
+    }
+
+    // Pasang / konfigurasi animasi spin pada crate yang baru dibuat
+    private void SetupSpin(FoodCrate crate)
+    {
+        if (!applySpinOnSpawn || crate == null) return;
+
+        ItemSpinner spinner = crate.GetComponent<ItemSpinner>();
+
+        if (spinner == null)
+        {
+            spinner = crate.gameObject.AddComponent<ItemSpinner>();
+            spinner.ApplySettings(spinSettings);
+        }
+        else if (overridePrefabSpinner)
+        {
+            spinner.ApplySettings(spinSettings);
+        }
+        // Kalau spinner sudah ada dan override dimatikan -> pakai setting dari prefab
     }
 
     private void HandleCrateCollected(FoodCrate crate)
@@ -53,7 +79,7 @@ public class FoodSpawner : MonoBehaviour
     private IEnumerator RespawnAfterDelay(int index)
     {
         yield return new WaitForSeconds(RespawnDelay);
-        
+
         if (crates[index] == null)
         {
             SpawnAt(index);
