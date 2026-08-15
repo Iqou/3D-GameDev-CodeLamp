@@ -27,6 +27,9 @@ public class UIManager : MonoBehaviour
     public bool startOpened = true;             // Kondisi awal saat game mulai
     public bool fadeContentWhenHidden = false;  // Opsional: ikut memudar saat tertutup
 
+    [Header("Audio")]
+    public string buttonSoundName = "Button";   // Nama sound yang dipanggil ke SoundManager
+
     private Vector2 contentShownPos;
     private Vector2 buttonShownPos;
     private Coroutine slideRoutine;
@@ -104,6 +107,21 @@ public class UIManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space)) Heal(1);
     }
 
+    // =====================================================
+    //  HELPER SUARA TOMBOL
+    // =====================================================
+    void PlayButtonSound()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySound2D(buttonSoundName);
+        }
+        else
+        {
+            Debug.LogWarning("SoundManager.Instance tidak ditemukan di scene. Suara tombol dilewati.");
+        }
+    }
+
     // --- FUNGSI TAMPILAN WAKTU (MM:SS) ---
     void DisplayTime(float timeToDisplay)
     {
@@ -144,12 +162,13 @@ public class UIManager : MonoBehaviour
     // Dipasang di OnClick() tombol Tugas
     public void ToggleObjectivePanel()
     {
+
         isObjectiveOpen = !isObjectiveOpen;
         ApplyObjectiveState(isObjectiveOpen, false);
         UpdateObjectiveButtonText();
     }
 
-    // Bonus: kalau butuh buka/tutup dari script lain
+    // Bonus: kalau butuh buka/tutup dari script lain (tanpa suara tombol)
     public void SetObjectivePanel(bool open)
     {
         if (isObjectiveOpen == open) return;
@@ -293,18 +312,24 @@ public class UIManager : MonoBehaviour
 
     public void OnEnterPausePress()
     {
+        PlayButtonSound(); // <-- SUARA TOMBOL
+
         if (pauseUI != null) pauseUI.SetActive(true);
         Time.timeScale = 0f;
     }
 
     public void OnGameResumePress()
     {
+        PlayButtonSound(); // <-- SUARA TOMBOL
+
         if (pauseUI != null) pauseUI.SetActive(false);
         Time.timeScale = 1f;
     }
 
     public void OnRestartPress()
     {
+        PlayButtonSound(); // <-- SUARA TOMBOL
+
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -312,6 +337,8 @@ public class UIManager : MonoBehaviour
     // --- FUNGSI EXIT KEMBALI KE MAIN MENU ---
     public void OnGameExitPress()
     {
+        PlayButtonSound(); // <-- SUARA TOMBOL
+
         Time.timeScale = 1f; // Reset kecepatan waktu agar game di Main Menu tidak macet
         SceneManager.LoadScene("Main Menu"); // Kembali ke scene MainMenu
     }
