@@ -104,7 +104,7 @@ public class UIManager : MonoBehaviour
 
         // Testing Input (Damage & Heal)
         if (Input.GetKeyDown(KeyCode.Backspace)) TakeDamage(1);
-        if (Input.GetKeyDown(KeyCode.Space)) Heal(1);
+        
     }
 
     // =====================================================
