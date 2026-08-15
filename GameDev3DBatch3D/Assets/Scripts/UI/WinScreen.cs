@@ -36,7 +36,7 @@ public class WinScreen : MonoBehaviour
 
     private void Show()
     {
-        soundManager.Instance.PlaySound2D("Win");
+        SoundManager.Instance.PlaySound2D("Win");
         panel.SetActive(true);
 
         if (pausedOnWin)
