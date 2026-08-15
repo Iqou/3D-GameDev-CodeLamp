@@ -56,10 +56,7 @@ public class HealthManager : MonoBehaviour
             TakeDamage(1);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Heal(1);
-        }
+
     }
 
     // ===== DETEKSI TABRAKAN 2D =====
