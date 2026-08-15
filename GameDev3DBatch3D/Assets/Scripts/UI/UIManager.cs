@@ -18,7 +18,7 @@ public class UIManager : MonoBehaviour
     public CanvasGroup objectiveCanvasGroup;    // Opsional: untuk fade + blok klik saat tertutup
 
     [Header("Slide Settings")]
-    public float contentSlideDistance = 600f;   // Seberapa jauh CONTENT turun (bikin keluar layar)
+    public float contentSlideDistance = 360f;   // Seberapa jauh CONTENT turun (bikin keluar layar)
     public float buttonSlideDistance = 120f;    // Seberapa jauh TOMBOL turun (jangan sampai keluar layar)
     public bool autoUseContentHeight = false;   // Kalau true, jarak content dihitung dari tinggi panel
     public float autoExtraPadding = 50f;        // Tambahan jarak saat autoUseContentHeight aktif
