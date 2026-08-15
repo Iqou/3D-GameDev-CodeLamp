@@ -53,7 +53,7 @@ public class HealthManager : MonoBehaviour
         // Input untuk testing
         if (Input.GetKeyDown(KeyCode.Backspace))
         {
-            TakeDamage(1);
+            TakeDamage(10);
         }
 
 
