@@ -60,6 +60,7 @@ public class WinScreen : MonoBehaviour
     // --- FUNGSI UNTUK TOMBOL UI ---
     public void RestartLevel()
     {
+        SoundManager.Instance.PlaySound2D("Retry");
         PlayButtonSound(); // <-- SUARA TOMBOL
 
         Time.timeScale = 1f;

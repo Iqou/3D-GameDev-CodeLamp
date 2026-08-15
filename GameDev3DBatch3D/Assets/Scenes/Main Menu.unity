@@ -340,6 +340,9 @@ MonoBehaviour:
   - groupID: Hurt
     clips:
     - {fileID: 8300000, guid: d9aa52b0df18b8948a2e17ea57066a69, type: 3}
+  - groupID: Win
+    clips:
+    - {fileID: 8300000, guid: 7774d4f3bec88ee4fbfecc7d403e7f0c, type: 3}
 --- !u!1 &2209700
 GameObject:
   m_ObjectHideFlags: 0
