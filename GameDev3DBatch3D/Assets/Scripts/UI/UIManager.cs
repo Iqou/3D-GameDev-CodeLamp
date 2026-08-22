@@ -340,6 +340,6 @@ public class UIManager : MonoBehaviour
         PlayButtonSound(); // <-- SUARA TOMBOL
 
         Time.timeScale = 1f; // Reset kecepatan waktu agar game di Main Menu tidak macet
-        SceneManager.LoadScene("Main Menu"); // Kembali ke scene MainMenu
+        SceneManager.LoadScene("Level Select"); // Kembali ke scene MainMenu
     }
 }
