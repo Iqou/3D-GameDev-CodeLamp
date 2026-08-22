@@ -127,4 +127,11 @@ public class MainMenuManager : MonoBehaviour
         PlayButtonSound();
         StartCoroutine(QuitAfterSound());
     }
+
+    public void OnGameExitPress()
+    {
+        PlayButtonSound(); 
+ 
+        SceneManager.LoadScene("Main Menu"); 
+    }
 }
