@@ -1,12 +1,16 @@
 using System;
 using UnityEngine;
 
-public class School : MonoBehaviour, IObjective
+public class School : MonoBehaviour, IObjective, IObjectiveFocus
 {
     [SerializeField] private string objectiveName = "School";
     [SerializeField, Min(1)] private int foodRequired = 5;
     [SerializeField] private int foodPerDelivery = 1;
     [SerializeField] private float deliveryInterval = 0.5f;
+
+    [SerializeField] private Transform focusPoint;
+    [SerializeField] private string hintOverride = "";
+    [SerializeField] private int spotlightOrder = 0;
 
     private int foodDelivered;
     private float timer;
@@ -18,6 +22,9 @@ public class School : MonoBehaviour, IObjective
     public int FoodPerDelivery => foodPerDelivery;
     public bool IsComplete => foodDelivered >= foodRequired;
 
+    public Transform FocusPoint => focusPoint;
+    public string HintText => string.IsNullOrEmpty(hintOverride) ? $"Deliver food to {objectiveName}" : hintOverride;
+    public int SpotlightOrder => spotlightOrder;
     public event Action<int, int> OnDeliveryProgress;
 
     public event Action<IObjective> OnCompleted;
