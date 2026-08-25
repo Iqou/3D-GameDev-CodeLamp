@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Van
   - Obstacle
+  - WALL
   layers:
   - Default
   - TransparentFX
