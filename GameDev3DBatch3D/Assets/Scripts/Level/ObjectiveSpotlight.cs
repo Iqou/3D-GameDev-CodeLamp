@@ -95,7 +95,7 @@ public class ObjectiveSpotlight : MonoBehaviour
     public void ShowNextObjective()
     {
         if (showFoodFirst && foodFocusPoint != null
-            && inventory != null && inventory.Count < foodBeforeCutscene
+            && inventory != null && inventory.Count == 0
             && manager.CompletedCount < manager.TotalCount)
         {
             Show(foodFocusPoint, foodHint);
