@@ -16,7 +16,16 @@ public class ObjectiveSpotlight : MonoBehaviour
     [SerializeField] private Transform finishFocusPoint;
     [SerializeField] private string finishHint = "balik ke tempat mula!";
 
+    [Header("Makanan / Ompreng")]
+    [SerializeField] private PlayerInventory inventory;
+    [SerializeField] private Transform foodFocusPoint;
+    [SerializeField] private string foodHint = "Ambil ompreng makanannya dulu!";
+    [SerializeField] private int foodBeforeCutscene = 10;
+    [SerializeField] private bool showFoodFirst = true;
+    [SerializeField] private bool playOnFoodPickedUp = true;   
+
     private LevelManager manager;
+    private bool hadEnough;
 
     public event Action<string> OnHintShown;
     public event Action OnHintHidden;
@@ -31,6 +40,21 @@ public class ObjectiveSpotlight : MonoBehaviour
         cutscene.OnCutsceneFinished += HandleCutsceneFinished;
 
         if (playOnLevelStart) StartCoroutine(ShowAfterRegistration());
+    }
+
+        private void OnEnable()
+    {
+        if (inventory == null) return;
+
+        hadEnough = inventory.Count >= foodBeforeCutscene;    // CHANGED
+        inventory.OnChanged += HandleInventoryChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (inventory == null) return;
+
+        inventory.OnChanged -= HandleInventoryChanged;
     }
 
     private void OnDestroy()
@@ -70,6 +94,14 @@ public class ObjectiveSpotlight : MonoBehaviour
     // Cari objective pertama yang belum selesai DAN punya titik kamera.
     public void ShowNextObjective()
     {
+        if (showFoodFirst && foodFocusPoint != null
+            && inventory != null && inventory.Count < foodBeforeCutscene
+            && manager.CompletedCount < manager.TotalCount)
+        {
+            Show(foodFocusPoint, foodHint);
+            return;
+        }
+        
         IObjectiveFocus best = null;
         IObjective bestObjective = null;
 
@@ -130,5 +162,19 @@ public class ObjectiveSpotlight : MonoBehaviour
     private void HandleCutsceneFinished()
     {
         OnHintHidden?.Invoke();
+    }
+
+        private void HandleInventoryChanged()
+    {
+        bool cukup = inventory.Count >= foodBeforeCutscene;    // CHANGED
+
+        bool baruSajaLengkap = cukup && !hadEnough;
+        hadEnough = cukup;
+
+        if (!playOnFoodPickedUp || !baruSajaLengkap) return;
+        if (manager == null || manager.LevelWon) return;
+        if (cutscene == null || cutscene.IsPlaying) return;
+
+        ShowNextObjective();
     }
 }
